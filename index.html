@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Minyak Fleksibel V. Akhir</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 90vh;
+        }
+        .container {
+            max-width: 450px;
+            width: 100%;
+            padding: 30px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        h2 {
+            text-align: center;
+            color: #d9534f;
+            margin-bottom: 5px;
+        }
+        .price-input {
+            margin-bottom: 25px;
+            padding: 10px;
+            border: 1px solid #ffdddd;
+            background-color: #fffafa;
+            border-radius: 4px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .radio-group {
+            margin-bottom: 20px;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff; /* Tukar warna untuk lebih jelas */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #d9edf7;
+            border: 1px solid #bce8f1;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #31708f;
+        }
+        .footer-name {
+            margin-top: 20px;
+            padding-top: 10px;
+            text-align: right;
+            font-size: 0.85em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kalkulator Harga Minyak</h2>
+
+    <div class="price-input">
+        <label for="price">Harga Minyak Semasa (RM per liter):</label>
+        <input type="number" id="price" value="1.99" min="0.01" step="0.01"> 
+    </div>
+
+    <label>Pilihan Pengiraan:</label>
+    <div class="radio-group" id="radio-group-mode">
+        <label><input type="radio" name="mode" value="LITERS" checked> Kira **Liter** (Dari RM)</label>
+        <label><input type="radio" name="mode" value="AMOUNT"> Kira **RM** (Dari Liter)</label>
+    </div>
+    
+    <label for="input-value" id="input-label">Masukkan Jumlah Wang Diisi (RM):</label>
+    <input type="number" id="input-value" value="50.00" min="0" step="0.01">
+
+    <button id="calculate-button">Kira Hasil</button>
+
+    <div id="result">
+        Sila masukkan nilai dan tekan butang Kira Hasil.
+    </div>
+    
+    <div class="footer-name">
+        **PokNIK KVB**
+    </div>
+</div>
+
+<script>
+    // Fungsi untuk mengemas kini label input apabila mod ditukar
+    function updateInterface() {
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const inputLabel = document.getElementById('input-label');
+        const inputField = document.getElementById('input-value');
+        const resultElement = document.getElementById('result');
+
+        if (mode === 'LITERS') {
+            inputLabel.textContent = 'Masukkan Jumlah Wang Diisi (RM):';
+            inputField.value = '50.00'; 
+        } else {
+            inputLabel.textContent = 'Masukkan Jumlah Liter Yang Diingini (Liter):';
+            inputField.value = '20.00'; 
+        }
+        
+        resultElement.innerHTML = 'Sila masukkan nilai dan tekan butang Kira Hasil.';
+        resultElement.style.backgroundColor = '#d9edf7';
+        resultElement.style.color = '#31708f';
+    }
+
+    // FUNGSI PENGIRAAN UTAMA
+    function performCalculation() {
+        // Baris ini sangat penting untuk iOS: memaksa pelayar meninggalkan medan input 
+        // supaya nilai terkini dapat diambil.
+        document.getElementById('price').blur();
+        document.getElementById('input-value').blur();
+        
+        const price = parseFloat(document.getElementById('price').value);
+        const mode = document.querySelector('input[name="mode"]:checked').value;
+        const inputValue = parseFloat(document.getElementById('input-value').value);
+        const resultElement = document.getElementById('result');
+
+        if (isNaN(price) || price <= 0 || isNaN(inputValue) || inputValue <= 0) {
+            resultElement.innerHTML = '<strong>RALAT:</strong> Sila masukkan harga dan nilai yang sah (lebih dari 0).';
+            resultElement.style.backgroundColor = '#f2dede';
+            resultElement.style.color = '#a94442';
+            return;
+        }
+
+        let finalResult = 0;
+        let resultText = '';
+
+        if (mode === 'LITERS') {
+            finalResult = inputValue / price;
+            resultText = `Dengan **RM${inputValue.toFixed(2)}** (Harga RM${price.toFixed(2)}/L), anda mendapat **${finalResult.toFixed(2)} liter** minyak.`;
+        } else {
+            finalResult = inputValue * price;
+            resultText = `Untuk mengisi **${inputValue.toFixed(2)} liter** (Harga RM${price.toFixed(2)}/L), anda memerlukan **RM${finalResult.toFixed(2)}**.`;
+        }
+
+        resultElement.innerHTML = resultText;
+        resultElement.style.backgroundColor = '#dff0d8'; 
+        resultElement.style.color = '#3c763d';
+    }
+
+    // PENGURUS ACARA (EVENT HANDLERS)
+    window.onload = function() {
+        // 1. Tetapkan antaramuka awal
+        updateInterface();
+
+        // 2. Tambah Event Listener pada butang Kira Hasil
+        document.getElementById('calculate-button').addEventListener('click', performCalculation);
+        
+        // 3. Tambah Event Listener pada radio button untuk mengemas kini label sahaja
+        const modeRadios = document.querySelectorAll('input[name="mode"]');
+        modeRadios.forEach(radio => {
+            radio.addEventListener('change', updateInterface);
+        });
+
+        // 4. Tambah event listener pada input untuk .blur() *jika* keyboard ditutup, ini adalah langkah tambahan untuk iOS
+        document.getElementById('price').addEventListener('blur', function() {
+             // Lakukan pengiraan sekiranya medan kehilangan fokus, hanya sebagai fallback
+            // performCalculation(); 
+        });
+        document.getElementById('input-value').addEventListener('blur', function() {
+            // Lakukan pengiraan sekiranya medan kehilangan fokus, hanya sebagai fallback
+            // performCalculation(); 
+        });
+    };
+</script>
+
+</body>
+</html>
